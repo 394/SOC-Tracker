@@ -123,6 +123,10 @@ docker compose up --build
 - Add deployment documentation for HTTPS, backups, migrations, and environment-specific configuration.
 - Add an API documentation page with example payloads for n8n and Elastic alert imports.
 
+## Contributing
+
+Community contributions are welcome. See `CONTRIBUTING.md` for suggested areas, pull request guidance, and security notes.
+
 ## License
 
 MIT. See `LICENSE`.
