@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en" data-theme="system">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}SOC Alert Tracker{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='alerts/app.css') }}">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">SOC</div>
+          <div>
+            <strong>SOC Tracker</strong>
+            <span>{{ current_role or "No role" }}</span>
+          </div>
+        </div>
+        <nav class="nav">
+          <a href="/">Dashboard</a>
+          <a href="/alerts/">Alerts</a>
+          <a href="/alerts/mine/">My assigned alerts</a>
+          {% if can_create_alert %}
+            <a href="/alerts/new/">New alert</a>
+            <a href="/elastic/import/">Elastic JSON</a>
+          {% endif %}
+          {% if can_manage_users %}
+            <a href="/admin/users/">Users</a>
+            <a href="/admin/audit/">Audit log</a>
+          {% endif %}
+        </nav>
+        <form action="/logout/" method="post" class="sidebar-footer">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <button type="submit">Logout</button>
+        </form>
+      </aside>
+      <main class="workspace">
+        {% if messages %}
+          <div class="messages">
+            {% for message in messages %}<div class="message">{{ message }}</div>{% endfor %}
+          </div>
+        {% endif %}
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% block title %}{{ alert.alert_id }} - SOC Alert Tracker{% endblock %}
+{% block content %}
+<article class="panel detail-panel">
+  <div class="detail-actions">
+    <a class="button" href="/alerts/">Back</a>
+    {% if can_edit %}<a class="button" href="/alerts/{{ alert.pk }}/edit/">Edit</a>{% endif %}
+    {% if can_escalate %}
+      <form method="post" action="/alerts/{{ alert.pk }}/escalate/">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button class="primary" type="submit">Escalate alert</button>
+      </form>
+    {% endif %}
+    {% if can_delete_alert %}
+      <form method="post" action="/alerts/{{ alert.pk }}/delete/">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button class="danger" type="submit">Delete</button>
+      </form>
+    {% endif %}
+  </div>
+  <p class="eyebrow">Alert detail</p>
+  <h1>{{ alert.alert_id }} {{ alert.title }}</h1>
+  <div class="pill-row">
+    <span class="pill severity-{{ alert.severity }}">{{ alert.severity }}</span>
+    <span class="pill">{{ alert.status }}</span>
+    {% set sla = sla_status(alert) %}
+    <span class="pill {{ sla.class }}">{{ sla.label }}</span>
+    <span class="pill">{{ alert.source }}</span>
+  </div>
+  <div class="detail-grid">
+    <div><strong>Analyst</strong><span>{{ alert.analyst }}</span></div>
+    <div><strong>Assigned to</strong><span>{{ alert.assigned_to or "Unassigned" }}</span></div>
+    <div><strong>Assigned by</strong><span>{{ alert.assigned_by or "-" }}</span></div>
+    <div><strong>Asset</strong><span>{{ alert.asset }}</span></div>
+    <div><strong>MITRE tactic</strong><span>{{ alert.tactic }}</span></div>
+    <div><strong>SLA</strong><span>{{ alert.sla_hours }} hours</span></div>
+    <div><strong>Created by</strong><span>{{ alert.created_by or "Webhook" }}</span></div>
+    <div><strong>Escalated by</strong><span>{{ alert.escalated_by or "-" }}</span></div>
+  </div>
+  {% if can_assign and assignable_users %}
+    <section class="assign-panel">
+      <h2>Assign investigation</h2>
+      <form method="post" action="/alerts/{{ alert.pk }}/assign/" class="inline-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <select name="assigned_to" required>
+          {% for analyst in assignable_users %}
+            <option value="{{ analyst.id }}">{{ analyst.username }} ({{ analyst.role }})</option>
+          {% endfor %}
+        </select>
+        <button class="primary" type="submit">Assign</button>
+      </form>
+      <p class="muted">Admins can assign L1 or L2. L2 can assign L1.</p>
+    </section>
+  {% endif %}
+  <section>
+    <h2>Description</h2>
+    <p class="description-full">{{ alert.description }}</p>
+  </section>
+  <section>
+    <h2>IOCs</h2>
+    <div class="pill-row">
+      {% for ioc in alert.iocs %}<span class="pill">{{ ioc }}</span>{% else %}<span class="muted">No IOCs</span>{% endfor %}
+    </div>
+  </section>
+  <section>
+    <h2>Report URL</h2>
+    <input readonly value="{{ request.url_for('alert_report', alert_id=alert.alert_id) }}">
+  </section>
+  {% if alert.status != "Closed" and can_edit %}
+    <section class="assign-panel">
+      <h2>Close alert</h2>
+      <form method="post" action="/alerts/{{ alert.pk }}/close/" class="form-grid">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <textarea name="resolution_summary" rows="4" minlength="20" placeholder="Summarize disposition, root cause, impacted assets, and final action" required></textarea>
+        <div class="form-actions">
+          <button class="primary" type="submit">Close with summary</button>
+        </div>
+      </form>
+    </section>
+  {% endif %}
+  <section class="assign-panel">
+    <h2>Investigation note</h2>
+    <form method="post" action="/alerts/{{ alert.pk }}/notes/" class="form-grid">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <textarea name="note" rows="4" placeholder="Add triage steps, containment actions, evidence, or handoff context" required></textarea>
+      <div class="form-actions">
+        <button class="primary" type="submit">Add note</button>
+      </div>
+    </form>
+  </section>
+  <section class="assign-panel">
+    <h2>Evidence</h2>
+    <form method="post" action="/alerts/{{ alert.pk }}/evidence/" enctype="multipart/form-data" class="inline-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <input name="evidence_file" type="file" accept=".txt,.log,.json,.csv,.png,.jpg,.jpeg,.pdf,.pcap,.pcapng" required>
+      <button class="primary" type="submit">Upload</button>
+    </form>
+    <div class="timeline">
+      {% for item in evidence %}
+        <article class="timeline-item">
+          <div>
+            <strong><a href="/evidence/{{ item.id }}/">{{ item.original_name }}</a></strong>
+            <span class="muted">{{ item.size_bytes }} bytes</span>
+          </div>
+          <p class="muted">SHA-256 {{ item.sha256 }}</p>
+        </article>
+      {% else %}
+        <div class="empty">No evidence uploaded</div>
+      {% endfor %}
+    </div>
+  </section>
+  <section>
+    <h2>Activity log</h2>
+    <div class="timeline">
+      {% for event in alert.events %}
+        <article class="timeline-item">
+          <div>
+            <strong>{{ event.event_type_display }}</strong>
+            <span class="muted">{{ event.created_at }}</span>
+          </div>
+          <p>{{ event.message }}</p>
+          {% if event.assigned_to %}
+            <p class="muted">Assigned to {{ event.assigned_to }}{% if event.actor %} by {{ event.actor }}{% endif %}</p>
+          {% elif event.actor %}
+            <p class="muted">By {{ event.actor }}</p>
+          {% endif %}
+          {% if event.source == "n8n" %}
+            <span class="pill">n8n</span>
+          {% endif %}
+        </article>
+      {% else %}
+        <div class="empty">No activity yet</div>
+      {% endfor %}
+    </div>
+  </section>
+</article>
+{% endblock %}

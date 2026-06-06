@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<header class="topbar">
+  <div>
+    <p class="eyebrow">{{ page_eyebrow or "Queue" }}</p>
+    <h1>{{ page_title or "Alerts" }}</h1>
+  </div>
+  <div class="topbar-actions">
+    <a class="button" href="/alerts/export.csv?{{ request.url.query }}">Export CSV</a>
+    {% if can_create_alert %}<a class="button primary" href="/alerts/new/">New alert</a>{% endif %}
+  </div>
+</header>
+<section class="panel">
+  {% include "alerts/partials/filter_form.html" %}
+  {% include "alerts/partials/alert_table.html" %}
+</section>
+{% endblock %}

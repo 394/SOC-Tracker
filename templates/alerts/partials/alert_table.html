@@ -1,0 +1,16 @@
+<div class="table">
+  {% for alert in alerts %}
+    <div class="table-row">
+      <a class="button" href="{{ alert.get_absolute_url() }}">{{ alert.alert_id }}</a>
+      <strong>{{ alert.title }}</strong>
+      <span class="severity-{{ alert.severity }}">{{ alert.severity }}</span>
+      <span>{{ alert.status }}</span>
+      {% set sla = sla_status(alert) %}
+      <span class="pill {{ sla.class }}">{{ sla.label }}</span>
+      <span>{{ alert.source }}</span>
+      <span>{{ alert.analyst }}</span>
+    </div>
+  {% else %}
+    <div class="empty">No alerts found</div>
+  {% endfor %}
+</div>

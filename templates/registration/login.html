@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login - SOC Alert Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='alerts/app.css') }}">
+  </head>
+  <body class="login-page">
+    <main class="login-card">
+      <h1>SOC Alert Tracker</h1>
+      {% if error %}<div class="message">{{ error }}</div>{% endif %}
+      <form method="post" class="form-grid single">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <p>
+          <label for="username">Username</label>
+          <input id="username" name="username" required autocomplete="username">
+        </p>
+        <p>
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" required autocomplete="current-password">
+        </p>
+        <button class="primary" type="submit">Login</button>
+      </form>
+    </main>
+  </body>
+</html>

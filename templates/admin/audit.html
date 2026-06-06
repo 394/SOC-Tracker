@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Audit Log - SOC Alert Tracker{% endblock %}
+{% block content %}
+<header class="topbar">
+  <div>
+    <p class="eyebrow">Administration</p>
+    <h1>Audit log</h1>
+  </div>
+</header>
+
+<section class="panel">
+  <div class="table audit-table">
+    {% for log in logs %}
+      <div class="table-row audit-row">
+        <span>{{ log.created_at }}</span>
+        <strong>{{ log.action }}</strong>
+        <span>{{ log.actor or "system" }}</span>
+        <span>{{ log.target_type }} {{ log.target_id }}</span>
+        <span>{{ log.source_ip or "-" }}</span>
+        <span>{{ log.message }}</span>
+      </div>
+    {% else %}
+      <div class="empty">No audit events found</div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

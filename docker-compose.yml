@@ -1,0 +1,14 @@
+services:
+  soc-alert-tracker:
+    build: .
+    image: soc-alert-tracker:local
+    environment:
+      N8N_API_KEY: change-me
+      N8N_API_HEADER: X-API-Key
+      APP_SECRET_KEY: dev-only-change-me
+      SQLITE_PATH: /app/data/fastapi.sqlite3
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped

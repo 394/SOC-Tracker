@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+<header class="topbar">
+  <div>
+    <p class="eyebrow">Alert</p>
+    <h1>{{ title }}</h1>
+  </div>
+</header>
+<section class="panel">
+  {% if error %}<div class="message">{{ error }}</div>{% endif %}
+  <form method="post" class="form-grid">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <p>
+      <label for="title">Title</label>
+      <input id="title" name="title" maxlength="180" required value="{{ form.get('title', '') }}">
+    </p>
+    <p>
+      <label for="description">Description</label>
+      <textarea id="description" name="description" rows="8" class="stretch-textarea">{{ form.get('description', '') }}</textarea>
+    </p>
+    <p>
+      <label for="source">Source</label>
+      <input id="source" name="source" maxlength="80" value="{{ form.get('source', 'Manual') }}">
+    </p>
+    <p>
+      <label for="severity">Severity</label>
+      <select id="severity" name="severity">
+        {% for severity in severities %}
+          <option value="{{ severity }}" {% if form.get('severity', 'Medium') == severity %}selected{% endif %}>{{ severity }}</option>
+        {% endfor %}
+      </select>
+    </p>
+    <p>
+      <label for="status">Status</label>
+      <select id="status" name="status">
+        {% for status in statuses %}
+          <option value="{{ status }}" {% if form.get('status', 'New') == status %}selected{% endif %}>{{ status }}</option>
+        {% endfor %}
+      </select>
+    </p>
+    <p>
+      <label for="analyst">Analyst</label>
+      <input id="analyst" name="analyst" maxlength="80" value="{{ form.get('analyst', 'Unassigned') }}">
+    </p>
+    <p>
+      <label for="tactic">MITRE tactic</label>
+      <input id="tactic" name="tactic" maxlength="100" value="{{ form.get('tactic', 'Unknown') }}">
+    </p>
+    <p>
+      <label for="asset">Asset</label>
+      <input id="asset" name="asset" maxlength="160" value="{{ form.get('asset', 'Unknown') }}">
+    </p>
+    <p>
+      <label for="iocs_text">IOCs</label>
+      <input id="iocs_text" name="iocs_text" placeholder="IP, hash, domain, username" value="{{ form.get('iocs_text', '') }}">
+    </p>
+    <p>
+      <label for="sla_hours">SLA hours</label>
+      <input id="sla_hours" name="sla_hours" type="number" min="1" max="168" value="{{ form.get('sla_hours', 8) }}">
+    </p>
+    <div class="form-actions">
+      <a class="button" href="{% if alert %}/alerts/{{ alert.pk }}/{% else %}/alerts/{% endif %}">Cancel</a>
+      <button class="primary" type="submit">Save alert</button>
+    </div>
+  </form>
+</section>
+{% endblock %}

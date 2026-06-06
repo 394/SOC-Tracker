@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<header class="topbar">
+  <div>
+    <p class="eyebrow">Import</p>
+    <h1>Elastic JSON</h1>
+  </div>
+</header>
+<section class="panel">
+  {% if error %}<div class="message">{{ error }}</div>{% endif %}
+  <form method="post" class="form-grid single">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <p>
+      <label for="raw_json">Paste Elastic alert JSON</label>
+      <textarea id="raw_json" name="raw_json" rows="14" class="json-paste" placeholder='{"_source":{"kibana.alert.rule.name":"Suspicious login"}}'>{{ raw_json }}</textarea>
+    </p>
+    <div class="form-actions">
+      <a class="button" href="/alerts/">Cancel</a>
+      <button class="primary" type="submit">Add parsed alert</button>
+    </div>
+  </form>
+</section>
+{% endblock %}

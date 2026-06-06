@@ -1,0 +1,16 @@
+<form method="get" class="filters">
+  <input name="q" value="{{ request.query_params.get('q', '') }}" placeholder="Search alert, asset, IOC, analyst">
+  <select name="severity">
+    <option value="">All severities</option>
+    {% for severity in severities %}
+      <option value="{{ severity }}" {% if request.query_params.get('severity') == severity %}selected{% endif %}>{{ severity }}</option>
+    {% endfor %}
+  </select>
+  <select name="status">
+    <option value="">All statuses</option>
+    {% for status in statuses %}
+      <option value="{{ status }}" {% if request.query_params.get('status') == status %}selected{% endif %}>{{ status }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit">Filter</button>
+</form>
