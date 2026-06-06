@@ -112,6 +112,17 @@ With Docker Compose:
 docker compose up --build
 ```
 
+## Future improvements
+
+- Add automated tests for alert workflows, role permissions, imports, and webhooks.
+- Add dashboard date-range filters and trend charts for weekly/monthly reporting.
+- Add richer SLA tracking with due dates, owner notifications, and breach history.
+- Add evidence management improvements such as file previews, tagging, and retention controls.
+- Add stronger production security defaults, including forced secret configuration and password reset flow.
+- Add external integrations for SIEM enrichment, ticket export, email/slack notifications, and case handoff.
+- Add deployment documentation for HTTPS, backups, migrations, and environment-specific configuration.
+- Add an API documentation page with example payloads for n8n and Elastic alert imports.
+
 ## License
 
 MIT. See `LICENSE`.
